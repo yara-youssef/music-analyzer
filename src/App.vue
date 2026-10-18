@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import AppLogo from './components/AppLogo.vue'
 import SearchPanel from './components/SearchPanel.vue'
 import ArtistView from './components/ArtistView.vue'
 import AlbumView from './components/AlbumView.vue'
@@ -33,7 +34,7 @@ const crumb = (e) => e.name || e.title
   <div class="app">
     <nav class="top">
       <div class="brand" @click="tab = 'explore'; trail = []">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+        <AppLogo />
         Lyric Lens
       </div>
       <div class="tabs">
@@ -87,7 +88,6 @@ const crumb = (e) => e.name || e.title
   border-bottom: 1px solid var(--border); flex-wrap: wrap;
 }
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; cursor: pointer; color: var(--text); }
-.brand svg { color: var(--accent); }
 .tabs { display: flex; gap: 4px; }
 .tabs button { border: 0; background: none; padding: 7px 12px; border-radius: 8px; cursor: pointer; color: var(--text-2); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
 .tabs button:hover { background: var(--surface-2); }
