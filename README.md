@@ -1,38 +1,36 @@
-# music_analysis
+# Lyric Lens
 
-This template should help get you started developing with Vue 3 in Vite.
+Analyze song lyrics by artist, album or song, paste your own, and compare songs by meaning.
 
-## Recommended IDE Setup
+## Features
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Explore**: search the music catalog for an artist, album or song.
+  - **Song**: word cloud (tinted by sentiment), most used words, positive vs negative words,
+    emotional arc line by line, and a repetition map (word × word self-similarity: choruses show up as stripes).
+  - **Album / artist** (top 10–25 songs): combined word cloud, recurring themes (share of songs a word
+    appears in), mood, vocabulary richness and repetitiveness per song, and each song's most distinctive words.
+- **Paste lyrics**: analyze any text, and add it to the comparison.
+- **Compare**: pick any songs (from search or pasted) and see how close they are:
+  - **Meaning (AI)**: a sentence-embedding model (`all-MiniLM-L6-v2` via Transformers.js) runs in the
+    browser, so songs about the same thing score close even with different wording. The model (~23 MB) is
+    downloaded on first use.
+  - **Shared vocabulary**: TF-IDF cosine similarity.
+  - Similarity matrix, 2D song map, closest / furthest pairs, and a pair breakdown of shared and unique words.
 
-## Recommended Browser Setup
+Everything runs client-side; no API keys are needed.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Data sources
 
-## Customize configuration
+- Catalog: [iTunes Search API](https://performance-partners.apple.com/search-api)
+- Lyrics: [LRCLIB](https://lrclib.net), falling back to [lyrics.ovh](https://lyricsovh.docs.apiary.io). Songs
+  without found lyrics can be pasted manually from the song page.
+- Sentiment: [AFINN-165](https://github.com/words/afinn-165) word list, with simple negation handling.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Development
 
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
+npm run dev     # start the dev server
+npm test        # unit tests for the text analysis
+npm run build   # production build
 ```
