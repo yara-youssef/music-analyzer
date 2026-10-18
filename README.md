@@ -2,6 +2,8 @@
 
 Analyze song lyrics by artist, album or song, paste your own, and compare songs by meaning.
 
+**Live app:** https://yara-youssef.github.io/music-analyzer/
+
 ## Features
 
 - **Explore**: search the music catalog for an artist, album or song.
@@ -34,3 +36,8 @@ npm run dev     # start the dev server
 npm test        # unit tests for the text analysis
 npm run build   # production build
 ```
+
+## Deployment
+
+Every push to `main` is built, tested and published to GitHub Pages by
+`.github/workflows/deploy.yml`.
