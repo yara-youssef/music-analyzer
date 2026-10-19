@@ -9,7 +9,8 @@ import { sentiment } from '@/lib/sentiment.js'
 import { signed, moodLabel } from '@/lib/format.js'
 
 const emit = defineEmits(['paste', 'open'])
-const method = ref('semantic')
+// Shared vocabulary by default: the AI model (~23 MB) only downloads when someone picks it.
+const method = ref('lexical')
 const result = ref(null)
 const running = ref(false)
 const error = ref('')
@@ -93,8 +94,8 @@ const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}
       <div v-if="songs.length" class="row foot">
         <span class="faint">Compare by</span>
         <div class="segmented">
-          <button :class="{ active: method === 'semantic' }" @click="method = 'semantic'" title="An AI language model reads each song and compares what they are about">Meaning (AI)</button>
           <button :class="{ active: method === 'lexical' }" @click="method = 'lexical'" title="Compares which distinctive words the songs share">Shared vocabulary</button>
+          <button :class="{ active: method === 'semantic' }" @click="method = 'semantic'" title="An AI language model reads each song and compares what they are about">Meaning (AI)</button>
         </div>
         <span v-if="running" class="faint"><span class="spinner"></span> {{ progress || 'Comparing…' }}</span>
         <button class="btn small ghost" style="margin-left: auto" @click="store.compare.splice(0)">Clear all</button>
