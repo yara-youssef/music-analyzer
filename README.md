@@ -23,7 +23,8 @@ Everything runs client-side; no API keys are needed.
 
 ## Data sources
 
-- Catalog: [iTunes Search API](https://performance-partners.apple.com/search-api)
+- Catalog: [iTunes Search API](https://performance-partners.apple.com/search-api), falling back to the
+  [Deezer API](https://developers.deezer.com/api) when iTunes is unreachable
 - Lyrics: [LRCLIB](https://lrclib.net), falling back to [lyrics.ovh](https://lyricsovh.docs.apiary.io). Songs
   without found lyrics can be pasted manually from the song page.
 - Sentiment: [AFINN-165](https://github.com/words/afinn-165) word list, with simple negation handling.
