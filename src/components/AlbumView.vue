@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import EntityHeader from './EntityHeader.vue'
 import TrackList from './TrackList.vue'
+import CollapsibleCard from './CollapsibleCard.vue'
 import CollectionAnalysis from './CollectionAnalysis.vue'
 import { albumTracks } from '@/services/catalog.js'
 import { useLyrics } from '@/lib/useLyrics.js'
@@ -30,10 +31,9 @@ watch(() => props.album.id, init, { immediate: true })
     </EntityHeader>
     <p v-if="error" class="error">{{ error }}</p>
     <div class="layout">
-      <div class="card tracks">
-        <div class="card-head"><h3>Tracks</h3></div>
+      <CollapsibleCard class="tracks" title="Tracks" :sub="`${items.length}`" storage-key="album-tracks">
         <TrackList :tracks="items" @open="(s) => emit('open', s)" />
-      </div>
+      </CollapsibleCard>
       <div class="main">
         <CollectionAnalysis v-if="withLyrics.length" :songs="withLyrics" @open="(s) => emit('open', s)" />
         <div v-else-if="loading" class="card faint"><span class="spinner"></span> Fetching lyrics…</div>

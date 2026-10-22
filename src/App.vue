@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import AppLogo from './components/AppLogo.vue'
-import SearchPanel from './components/SearchPanel.vue'
+import HeaderSearch from './components/HeaderSearch.vue'
 import ArtistView from './components/ArtistView.vue'
 import AlbumView from './components/AlbumView.vue'
 import SongView from './components/SongView.vue'
@@ -35,8 +35,9 @@ const crumb = (e) => e.name || e.title
     <nav class="top">
       <div class="brand" @click="tab = 'explore'; trail = []">
         <AppLogo />
-        Lyric Lens
+        <span class="brand-name">Lyric Lens</span>
       </div>
+      <HeaderSearch class="search" @select="start" />
       <div class="tabs">
         <button :class="{ active: tab === 'explore' }" @click="tab = 'explore'">Explore</button>
         <button :class="{ active: tab === 'paste' }" @click="tab = 'paste'">Paste lyrics</button>
@@ -49,12 +50,11 @@ const crumb = (e) => e.name || e.title
     <main>
       <template v-if="tab === 'explore'">
         <div class="explore">
-          <aside><SearchPanel @select="start" /></aside>
           <section class="content">
             <div v-if="!trail.length" class="empty card">
               <h2>Explore the words behind the music</h2>
               <p class="muted">
-                Search for an artist, album or song to see its word cloud, emotional arc, vocabulary and repetition
+                Use the search bar at the top to find an artist, album or song and see its word cloud, emotional arc, vocabulary and repetition
                 patterns. Add songs to <b>Compare</b> to see how close they are in meaning, or paste your own lyrics.
               </p>
             </div>
@@ -87,15 +87,13 @@ const crumb = (e) => e.name || e.title
   padding: 10px 24px; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border); flex-wrap: wrap;
 }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; cursor: pointer; color: var(--text); }
-.tabs { display: flex; gap: 4px; }
+.brand { flex: none; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; cursor: pointer; color: var(--text); }
+.tabs { flex: none; display: flex; gap: 4px; }
 .tabs button { border: 0; background: none; padding: 7px 12px; border-radius: 8px; cursor: pointer; color: var(--text-2); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
 .tabs button:hover { background: var(--surface-2); }
 .tabs button.active { color: var(--text); background: var(--surface-2); }
 .badge { background: var(--accent); color: var(--accent-ink); border-radius: 999px; font-size: 11px; padding: 0 7px; line-height: 18px; }
 main { max-width: 1320px; margin: 0 auto; padding: 24px; }
-.explore { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
-aside { position: sticky; top: 76px; }
 .content { min-width: 0; }
 .empty { padding: 40px; }
 .empty p { max-width: 560px; margin: 12px 0 0; }
@@ -104,9 +102,14 @@ aside { position: sticky; top: 76px; }
 .crumbs button.cur { color: var(--text-2); cursor: default; }
 footer { text-align: center; padding: 24px 16px 32px; }
 @media (max-width: 900px) {
-  .explore { grid-template-columns: 1fr; }
-  aside { position: static; }
+  /* Phone / narrow: logo and tabs on the first row, full-width search below. */
+  .search { order: 3; flex-basis: 100%; max-width: none; }
   main { padding: 16px; }
   .top { padding: 10px 16px; }
+}
+/* Small phones: icon-only logo so the logo and tabs share one row above the search. */
+@media (max-width: 480px) {
+  .brand-name { display: none; }
+  .tabs button { padding: 7px 9px; }
 }
 </style>

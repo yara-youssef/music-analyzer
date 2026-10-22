@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import EntityHeader from './EntityHeader.vue'
 import TrackList from './TrackList.vue'
+import CollapsibleCard from './CollapsibleCard.vue'
 import CollectionAnalysis from './CollectionAnalysis.vue'
 import { artistAlbums, artistTopSongs } from '@/services/catalog.js'
 import { useLyrics } from '@/lib/useLyrics.js'
@@ -34,20 +35,18 @@ watch(songCount, init)
   <div class="stack">
     <EntityHeader kind="Artist" :title="artist.name" :subtitle="artist.genre" :artwork="albums[0]?.artwork" />
     <p v-if="error" class="error">{{ error }}</p>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-head">
-          <h3>Top songs</h3>
+    <div class="grid-2 top">
+      <CollapsibleCard title="Top songs" :sub="`${items.length} songs`" storage-key="artist-top-songs">
+        <template #actions>
           <select v-model.number="songCount" class="input sel" aria-label="Number of songs">
             <option :value="10">Top 10</option>
             <option :value="15">Top 15</option>
             <option :value="25">Top 25</option>
           </select>
-        </div>
+        </template>
         <TrackList :tracks="items" @open="(s) => emit('open', s)" />
-      </div>
-      <div class="card">
-        <div class="card-head"><h3>Albums</h3><span class="card-sub">{{ albums.length }}</span></div>
+      </CollapsibleCard>
+      <CollapsibleCard title="Albums" :sub="`${albums.length}`" storage-key="artist-albums">
         <div class="albums">
           <button v-for="a in albums" :key="a.id" class="album" @click="emit('open', a)">
             <img v-if="a.artwork" :src="a.artwork" alt="" loading="lazy" />
@@ -56,7 +55,7 @@ watch(songCount, init)
             <span class="faint">{{ a.year }}</span>
           </button>
         </div>
-      </div>
+      </CollapsibleCard>
     </div>
     <h3 class="section">Analysis of top songs <span v-if="loading" class="spinner"></span></h3>
     <CollectionAnalysis v-if="withLyrics.length" :songs="withLyrics" @open="(s) => emit('open', s)" />
@@ -65,6 +64,7 @@ watch(songCount, init)
 </template>
 
 <style scoped>
+.top { align-items: start; }
 .sel { width: auto; padding: 4px 8px; font-size: 13px; }
 .albums { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 560px; overflow: auto; }
 .album { display: flex; flex-direction: column; gap: 2px; background: none; border: 0; padding: 6px; border-radius: 8px; cursor: pointer; text-align: left; }
