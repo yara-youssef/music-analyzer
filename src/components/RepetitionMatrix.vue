@@ -6,7 +6,10 @@ import { STOPWORDS } from '@/lib/stopwords.js'
 
 // Self-similarity matrix: word i (row) vs word j (column) is filled when they are
 // the same word. Choruses show up as diagonal stripes, refrains as squares.
-const props = defineProps({ text: { type: String, required: true } })
+const props = defineProps({
+  text: { type: String, required: true },
+  legend: { type: Boolean, default: true },
+})
 const MAX_TOKENS = 600
 
 const wrap = ref(null)
@@ -86,9 +89,11 @@ watch([tokens, size], draw)
         …{{ hover.a }}…<br />…{{ hover.b }}…
       </div>
     </div>
-    <div class="legend">
-      <span><i style="background: var(--series-1)"></i>repeated meaningful word</span>
-      <span><i style="background: var(--neutral)"></i>repeated filler word</span>
+    <div v-if="legend || truncated" class="legend">
+      <template v-if="legend">
+        <span><i style="background: var(--series-1)"></i>repeated meaningful word</span>
+        <span><i style="background: var(--neutral)"></i>repeated filler word</span>
+      </template>
       <span v-if="truncated">first {{ MAX_TOKENS }} words shown</span>
     </div>
   </div>

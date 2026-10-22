@@ -12,11 +12,14 @@ Analyze song lyrics by artist, album or song, paste your own, and compare songs 
   - **Album / artist** (top 10–25 songs): combined word cloud, recurring themes (share of songs a word
     appears in), mood, vocabulary richness and repetitiveness per song, and each song's most distinctive words.
 - **Paste lyrics**: analyze any text, and add it to the comparison.
-- **Compare**: pick any songs (from search or pasted) and see how close they are:
-  - **Shared vocabulary** (default): TF-IDF cosine similarity.
-  - **Meaning (AI)**: a sentence-embedding model (`all-MiniLM-L6-v2` via Transformers.js) runs in the
-    browser, so songs about the same thing score close even with different wording. The model (~23 MB) is
-    downloaded only when you choose this option.
+- **Compare**: pick any songs (from search or pasted):
+  - **Side by side**: the Explore song analysis for every selected song in aligned columns (key numbers,
+    word cloud, top words, emotional words, emotional arc on a shared scale, repetition map).
+  - **How similar are they?**, by one of two methods:
+    - **Shared vocabulary** (default): TF-IDF cosine similarity.
+    - **Meaning (AI)**: a sentence-embedding model (`all-MiniLM-L6-v2` via Transformers.js) runs in the
+      browser, so songs about the same thing score close even with different wording. The model (~23 MB) is
+      downloaded only when you choose this option.
   - Similarity matrix, 2D song map, closest / furthest pairs, and a pair breakdown of shared and unique words.
 
 Everything runs client-side; no API keys are needed.

@@ -7,6 +7,7 @@ import { wordPolarity } from '@/lib/sentiment.js'
 const props = defineProps({
   words: { type: Array, required: true }, // [{ word, count }]
   height: { type: Number, default: 340 },
+  legend: { type: Boolean, default: true },
 })
 
 const el = ref(null)
@@ -41,7 +42,7 @@ function runLayout() {
     .size([w, h])
     .words(words.map((d) => ({ text: d.word, count: d.count, size: scale(d.count) })))
     .padding(3)
-    .rotate((d, i) => (i % 7 === 3 ? -90 : 0))
+    .rotate((d, i) => (w >= 480 && i % 7 === 3 ? -90 : 0))
     .font('Inter, system-ui, sans-serif')
     .fontWeight((d) => (d.size > 30 ? 700 : 500))
     .fontSize((d) => d.size)
@@ -62,7 +63,7 @@ watch([() => props.words, width], runLayout, { immediate: true })
 </script>
 
 <template>
-  <div ref="el" class="cloud" :style="{ height: height + 'px' }">
+  <div ref="el" class="cloud" :class="{ 'no-legend': !legend }" :style="{ height: height + 'px' }">
     <svg :width="width" :height="height" role="img" aria-label="Word cloud of the most frequent words">
       <g :transform="`translate(${width / 2},${height / 2})`">
         <text
@@ -84,7 +85,7 @@ watch([() => props.words, width], runLayout, { immediate: true })
     >
       <b>{{ hover.text }}</b> · {{ hover.count }}×
     </div>
-    <div class="legend">
+    <div v-if="legend" class="legend">
       <span><i style="background: var(--pos)"></i>positive word</span>
       <span><i style="background: var(--neg)"></i>negative word</span>
       <span><i style="background: var(--text-2)"></i>neutral</span>
@@ -94,6 +95,7 @@ watch([() => props.words, width], runLayout, { immediate: true })
 
 <style scoped>
 .cloud { position: relative; margin-bottom: 28px; }
+.cloud.no-legend { margin-bottom: 0; }
 .word { cursor: default; transition: opacity 0.15s; font-family: Inter, system-ui, sans-serif; }
 .word.pos { fill: var(--pos); }
 .word.neg { fill: var(--neg); }
