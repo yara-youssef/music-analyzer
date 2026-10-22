@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import SimilarityHeatmap from './SimilarityHeatmap.vue'
 import SimilarityMap from './SimilarityMap.vue'
+import SideBySide from './SideBySide.vue'
 import { store, removeFromCompare } from '@/store.js'
 import { compareSongs } from '@/lib/similarity.js'
 import { distinctiveTerms } from '@/lib/text.js'
@@ -92,20 +93,35 @@ const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}
         </span>
       </div>
       <div v-if="songs.length" class="row foot">
-        <span class="faint">Compare by</span>
-        <div class="segmented">
-          <button :class="{ active: method === 'lexical' }" @click="method = 'lexical'" title="Compares which distinctive words the songs share">Shared vocabulary</button>
-          <button :class="{ active: method === 'semantic' }" @click="method = 'semantic'" title="An AI language model reads each song and compares what they are about">Meaning (AI)</button>
-        </div>
-        <span v-if="running" class="faint"><span class="spinner"></span> {{ progress || 'Comparing…' }}</span>
+        <span class="faint">{{ songs.length }} song{{ songs.length === 1 ? '' : 's' }}</span>
         <button class="btn small ghost" style="margin-left: auto" @click="store.compare.splice(0)">Clear all</button>
       </div>
-      <p v-if="method === 'semantic' && songs.length > 1" class="faint note">
-        “Meaning” runs a small language model (all-MiniLM-L6-v2) in your browser, so songs about the same thing score
-        close even when they use different words. The first run downloads about 23 MB.
-      </p>
-      <p v-if="error" class="error">{{ error }}</p>
     </div>
+
+    <template v-if="songs.length">
+      <h2 class="section">Side by side</h2>
+      <SideBySide :songs="songs" @open="(s) => emit('open', s)" />
+    </template>
+
+    <template v-if="songs.length > 1">
+      <h2 class="section">How similar are they?</h2>
+      <div class="card">
+        <div class="row">
+          <span class="faint">Compare by</span>
+          <div class="segmented">
+            <button :class="{ active: method === 'lexical' }" @click="method = 'lexical'" title="Compares which distinctive words the songs share">Shared vocabulary</button>
+            <button :class="{ active: method === 'semantic' }" @click="method = 'semantic'" title="An AI language model reads each song and compares what they are about">Meaning (AI)</button>
+          </div>
+          <span v-if="running" class="faint"><span class="spinner"></span> {{ progress || 'Comparing…' }}</span>
+        </div>
+        <p v-if="method === 'semantic'" class="faint note">
+          “Meaning” runs a small language model (all-MiniLM-L6-v2) in your browser, so songs about the same thing score
+          close even when they use different words. The first run downloads about 23 MB.
+        </p>
+        <p v-if="error" class="error">{{ error }}</p>
+      </div>
+    </template>
+    <p v-else-if="songs.length === 1" class="faint">Add one more song to see how similar they are.</p>
 
     <template v-if="result && songs.length > 1">
       <div class="grid-2">
@@ -179,7 +195,8 @@ const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}
 .chip-txt > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
 .x { border: 0; background: none; cursor: pointer; font-size: 18px; color: var(--text-3); padding: 0 6px; }
 .x:hover { color: var(--text); }
-.foot { margin-top: 14px; }
+.foot { margin-top: 14px; justify-content: space-between; }
+.section { font-size: 18px; margin-top: 8px; }
 .note { margin: 10px 0 0; }
 .pairs { list-style: none; margin: 0; padding: 0; }
 .pairs li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 6px; border-bottom: 1px solid var(--border); cursor: pointer; border-radius: 6px; }

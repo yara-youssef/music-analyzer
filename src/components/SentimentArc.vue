@@ -5,6 +5,8 @@ import { useWidth } from '@/lib/useWidth.js'
 const props = defineProps({
   points: { type: Array, required: true }, // [{ index, value, line }]
   height: { type: Number, default: 200 },
+  // Pass a shared value to put several arcs on the same scale.
+  scaleMax: { type: Number, default: 0 },
 })
 
 const el = ref(null)
@@ -14,7 +16,7 @@ const m = { top: 12, right: 12, bottom: 24, left: 36 }
 
 const innerW = computed(() => width.value - m.left - m.right)
 const innerH = computed(() => props.height - m.top - m.bottom)
-const maxAbs = computed(() => Math.max(0.15, ...props.points.map((p) => Math.abs(p.value))))
+const maxAbs = computed(() => props.scaleMax || Math.max(0.15, ...props.points.map((p) => Math.abs(p.value))))
 const x = (i) => (props.points.length > 1 ? (i / (props.points.length - 1)) * innerW.value : innerW.value / 2)
 const y = (v) => innerH.value / 2 - (v / maxAbs.value) * (innerH.value / 2)
 
