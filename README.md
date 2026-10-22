@@ -12,7 +12,7 @@ Analyze song lyrics by artist, album or song, paste your own, and compare songs 
   - **Album / artist** (top 10–25 songs): combined word cloud, recurring themes (share of songs a word
     appears in), mood, vocabulary richness and repetitiveness per song, and each song's most distinctive words.
 - **Paste lyrics**: analyze any text, and add it to the comparison.
-- **Compare**: pick any songs (from search or pasted):
+- **Compare**: pick any songs (from search or pasted), and drag them into the order you want:
   - **Side by side**: the Explore song analysis for every selected song in aligned columns (key numbers,
     word cloud, top words, emotional words, emotional arc on a shared scale, repetition map).
   - **How similar are they?**, by one of two methods:

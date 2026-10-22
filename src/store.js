@@ -45,3 +45,9 @@ export function removeFromCompare(id) {
 export function toggleCompare(song) {
   inCompare(song.id) ? removeFromCompare(song.id) : addToCompare(song)
 }
+
+export function moveInCompare(from, to) {
+  const list = store.compare
+  if (from === to || from < 0 || to < 0 || from >= list.length || to >= list.length) return
+  list.splice(to, 0, list.splice(from, 1)[0])
+}

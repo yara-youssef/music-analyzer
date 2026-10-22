@@ -3,7 +3,8 @@ import { computed, ref, watch } from 'vue'
 import SimilarityHeatmap from './SimilarityHeatmap.vue'
 import SimilarityMap from './SimilarityMap.vue'
 import SideBySide from './SideBySide.vue'
-import { store, removeFromCompare } from '@/store.js'
+import CompareChips from './CompareChips.vue'
+import { store } from '@/store.js'
 import { compareSongs } from '@/lib/similarity.js'
 import { distinctiveTerms } from '@/lib/text.js'
 import { sentiment } from '@/lib/sentiment.js'
@@ -19,7 +20,10 @@ const progress = ref('')
 const selected = ref(null)
 
 const songs = computed(() => store.compare)
-const labels = computed(() => songs.value.map((s) => s.title))
+// Results carry the song list they were computed for, so indices stay right while a
+// newer comparison (after a reorder or removal) is still running.
+const resultSongs = computed(() => result.value?.songs ?? [])
+const labels = computed(() => resultSongs.value.map((s) => s.title))
 let runId = 0
 
 async function run() {
@@ -33,13 +37,14 @@ async function run() {
   running.value = true
   progress.value = ''
   try {
-    const r = await compareSongs(songs.value, method.value, (p) => {
+    const list = songs.value.slice()
+    const r = await compareSongs(list, method.value, (p) => {
       if (id !== runId) return
       if (p.status === 'progress' && p.file?.endsWith('.onnx')) progress.value = `Downloading language model… ${Math.round(p.progress)}%`
       else if (p.status === 'embedded') progress.value = `Reading lyrics… ${p.done}/${p.total}`
     })
     if (id !== runId) return
-    result.value = r
+    result.value = { ...r, songs: list }
     selected.value = r.pairs[0] ? { i: r.pairs[0].i, j: r.pairs[0].j } : null
   } catch (e) {
     if (id === runId) error.value = method.value === 'semantic'
@@ -58,9 +63,9 @@ const pairDetail = computed(() => {
   const pair = r.pairs.find((p) => (p.i === sel.i && p.j === sel.j) || (p.i === sel.j && p.j === sel.i))
   if (!pair) return null
   const side = (k) => ({
-    song: songs.value[k],
+    song: resultSongs.value[k],
     distinct: distinctiveTerms(r.tfidf[k], 8).filter((w) => !pair.shared.includes(w)).slice(0, 6),
-    mood: sentiment(songs.value[k].lyrics).comparative,
+    mood: sentiment(resultSongs.value[k].lyrics).comparative,
   })
   return { ...pair, a: side(pair.i), b: side(pair.j) }
 })
@@ -72,7 +77,7 @@ function verdict(v) {
 }
 const closest = computed(() => result.value?.pairs.slice(0, 3) ?? [])
 const farthest = computed(() => (result.value ? result.value.pairs.slice(-3).reverse() : []))
-const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}`
+const pairName = (p) => `${resultSongs.value[p.i].title} ↔ ${resultSongs.value[p.j].title}`
 </script>
 
 <template>
@@ -85,13 +90,7 @@ const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}
       <p v-if="!songs.length" class="faint">
         Nothing here yet. Use “+ Compare” on any song in Explore, or paste lyrics, to add songs. You need at least two.
       </p>
-      <div class="chips">
-        <span v-for="s in songs" :key="s.id" class="chip">
-          <img v-if="s.artwork" :src="s.artwork" alt="" />
-          <span class="chip-txt"><b>{{ s.title }}</b><span class="faint">{{ s.artist }}</span></span>
-          <button class="x" @click="removeFromCompare(s.id)" :aria-label="`Remove ${s.title}`">×</button>
-        </span>
-      </div>
+      <CompareChips />
       <div v-if="songs.length" class="row foot">
         <span class="faint">{{ songs.length }} song{{ songs.length === 1 ? '' : 's' }}</span>
         <button class="btn small ghost" style="margin-left: auto" @click="store.compare.splice(0)">Clear all</button>
@@ -151,7 +150,7 @@ const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}
         </div>
         <div class="card">
           <div class="card-head"><h3>Song map</h3><span class="card-sub">closer together = more alike</span></div>
-          <SimilarityMap :points="result.points" :labels="labels" :groups="songs.map((s) => s.artist)" />
+          <SimilarityMap :points="result.points" :labels="labels" :groups="resultSongs.map((s) => s.artist)" />
         </div>
       </div>
       <div v-if="pairDetail" class="card">
@@ -188,13 +187,6 @@ const pairName = (p) => `${songs.value[p.i].title} ↔ ${songs.value[p.j].title}
 </template>
 
 <style scoped>
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 4px 4px 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); max-width: 280px; }
-.chip img { width: 32px; height: 32px; border-radius: 6px; }
-.chip-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; padding-left: 4px; }
-.chip-txt > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
-.x { border: 0; background: none; cursor: pointer; font-size: 18px; color: var(--text-3); padding: 0 6px; }
-.x:hover { color: var(--text); }
 .foot { margin-top: 14px; justify-content: space-between; }
 .section { font-size: 18px; margin-top: 8px; }
 .note { margin: 10px 0 0; }
